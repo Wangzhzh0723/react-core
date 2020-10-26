@@ -22,9 +22,12 @@ class Hello extends React.Component {
     })
     console.log(this.state.number)
   }
+  onClickDiv = () => {
+    console.log("haha")
+  }
   render() {
     return (
-      <div>
+      <div onClick={this.onClickDiv}>
         <p>name:{this.props.name}</p>
         <p>number: {this.state.number}</p>
         <button onClick={this.onClickHandler}>++</button>

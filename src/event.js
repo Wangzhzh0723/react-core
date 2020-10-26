@@ -25,21 +25,30 @@ let syntheticEvent = {}
  * @param {*} event 原生事件对象
  */
 function dispatchEvent(event) {
-  const { target, type } = event // type = click
-  const { store } = target
+  let { target, type } = event // type = click
   const eventType = `on${type}` // onclick
-  const listener = store && store[eventType]
-  // 点击绑定事件外面 的 dom 未绑定 事件 store 不存在直接返回
-  if (!listener) return
 
+  // 点击绑定事件外面 的 dom 未绑定 事件 store 不存在直接返回
+
+  // 设置为批量更新模式
   updateQueue.isBatchingUpdate = true
 
+  // 创建合成事件
   syntheticEvent = createSyntheticEvent(event)
-  listener.call(target, syntheticEvent)
+  // 事件冒泡
+  while (target) {
+    const { store } = target
+    const listener = store && store[eventType]
+    listener && listener.call(target, syntheticEvent)
+    target = target.parentNode
+  }
+
+  // 清空合成事件
   for (const key in syntheticEvent) {
     syntheticEvent[key] = null
   }
 
+  // 批量更新更新队列
   updateQueue.batchUpdate()
 }
 
