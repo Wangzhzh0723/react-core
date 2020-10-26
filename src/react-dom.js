@@ -2,11 +2,11 @@
  * @Author: Jonath
  * @Date: 2020-10-25 00:53:59
  * @LastEditors: Jonath
- * @LastEditTime: 2020-10-26 12:20:44
+ * @LastEditTime: 2020-10-26 13:47:39
  * @Description: React渲染相关
  */
 
-import { isString, isNumber } from "./utils/util"
+import { isString, isNumber, isFunction } from "./utils/util"
 
 /**
  * 虚拟DOM转换成真实DOM, 并插入到容器里
@@ -32,12 +32,50 @@ function createDOM(vdom) {
   }
   // React元素
   const { type, props } = vdom
-  const dom = document.createElement(type) // span div ...
+  let dom
+  // 是组件
+  if (isFunction(type)) {
+    if (type.isReactComponent) {
+      // 类组件
+      return updateClassComponent(vdom)
+    } else {
+      // 函数组件
+      return updateFunctionComponent(vdom)
+    }
+  } else {
+    dom = document.createElement(type) // span div ...
+  }
+
   updateProps(dom, props) // 更新属性, 把虚拟DOM上的属性设置到真实DOM上
 
   const children = props.children
   reconcileChildren(children, dom)
 
+  return dom
+}
+
+/**
+ * 得到函数组件的真实DOM
+ * @param {*} vdom 函数组件的虚拟DOM
+ */
+function updateFunctionComponent(vdom) {
+  const { type, props } = vdom
+  const renderVdom = type(props)
+  return createDOM(renderVdom)
+}
+
+/**
+ * 得到类组件的真实DOM
+ * @param {*} vdom 类组件的虚拟DOM
+ */
+function updateClassComponent(vdom) {
+  const { type, props } = vdom
+  // 创建类组件实例
+  const classInstance = new type(props)
+  // 调用实例的render方法得到其虚拟DOM
+  const renderVdom = classInstance.render()
+  // 让类组件实例上挂载一个dom指向类实例的真实DOM
+  const dom = (classInstance.dom = createDOM(renderVdom))
   return dom
 }
 

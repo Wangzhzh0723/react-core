@@ -2,9 +2,11 @@
  * @Author: Jonath
  * @Date: 2020-10-25 00:53:50
  * @LastEditors: Jonath
- * @LastEditTime: 2020-10-26 11:16:07
+ * @LastEditTime: 2020-10-26 13:39:39
  * @Description: React
  */
+import { Component } from "./component"
+
 /**
  * 创建React元素
  * @param {*} type 元素类型
@@ -22,7 +24,8 @@ export function createElement(type, config = {}, ...children) {
 }
 
 const React = {
-  createElement
+  createElement,
+  Component
 }
 
 export default React
