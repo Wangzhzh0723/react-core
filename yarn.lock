@@ -2210,6 +2210,11 @@ async-limiter@~1.0.0:
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
 
+async-try-catch-loader@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/async-try-catch-loader/-/async-try-catch-loader-1.0.2.tgz#86576b7a7c68bd2037263d8ec29dd95269a9eb3d"
+  integrity sha512-cRkpYDjNrrdMBPNMurD/2OuFXfUMxxg/qt2xmm54fHt4XKnDdG5dHSA4fuMh1uZB5Q/A0+DBo/bSUFRyDz5aXA==
+
 async@^2.6.2:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.3.tgz#d72625e2344a3656e3a3ad4fa749fa83299d82ff"

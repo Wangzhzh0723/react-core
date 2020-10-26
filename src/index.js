@@ -1,17 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+// 核心库  与渲染平台无关
+import React from "./react"
+// 渲染库, 可以把React渲染到不同的平台上 react-dom react-native react-canvas
+import ReactDOM from "./react-dom"
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const element = React.createElement(
+  "h1",
+  {
+    className: "title",
+    style: {
+      color: "red"
+    }
+  },
+  React.createElement("span", null, "hello"),
+  " word"
+)
+ReactDOM.render(element, window.root)
