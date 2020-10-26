@@ -7,6 +7,7 @@
  */
 
 import { isString, isNumber, isFunction } from "./utils/util"
+import { addEvent } from "./event"
 
 /**
  * 虚拟DOM转换成真实DOM, 并插入到容器里
@@ -93,7 +94,8 @@ function updateProps(dom, props) {
       for (const styleKey in element) dom.style[styleKey] = element[styleKey]
     } else if (key.startsWith("on")) {
       // 处理事件
-      dom[key.toLowerCase()] = element
+      // dom[key.toLowerCase()] = element
+      addEvent(dom, key.toLowerCase(), element)
     } else {
       // dom.className = "title"
       dom[key] = element

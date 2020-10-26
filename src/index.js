@@ -10,7 +10,13 @@ class Hello extends React.Component {
       number: 0
     }
   }
-  onClickHandler = () => {
+  onClickHandler = event => {
+    console.log(event)
+    setTimeout(() => {
+      console.log(event)
+      this.setState({ number: this.state.number + 1 })
+      console.log(this.state.number)
+    }, 20)
     this.setState({ number: this.state.number + 1 }, () => {
       console.log(this.state.number)
     })

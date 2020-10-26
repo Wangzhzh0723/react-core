@@ -42,16 +42,17 @@ function updateClassComponent(classInstance, renderDom) {
  * 更新器队列
  */
 export const updateQueue = {
-  updaters: [], // 更新器数组
-  isBatchingUpdate: false, // 标志 是否处于批量更新模式  默认是批量更新
+  updaters: new Set(), // 更新器数组
+  isBatchingUpdate: true, // 标志 是否处于批量更新模式  默认是批量更新
   add(updater) {
     // 增加更新器
-    this.updaters.push(updater)
+    this.updaters.add(updater)
   },
   batchUpdate() {
     // 强制更新更新器
-    this.updaters.forEach(updater => updater.updateComponent)
+    this.updaters.forEach(updater => updater.updateComponent())
     this.isBatchingUpdate = false
+    this.updaters.clear()
   }
 }
 
