@@ -2,7 +2,7 @@
  * @Author: Jonath
  * @Date: 2020-10-25 00:53:59
  * @LastEditors: Jonath
- * @LastEditTime: 2020-10-26 13:47:39
+ * @LastEditTime: 2020-10-26 17:01:37
  * @Description: React渲染相关
  */
 
@@ -21,7 +21,7 @@ export function render(vdom, container) {
  * 把虚拟DOM变成真实DOM
  * @param {*} vdom null 数字  字符串  React元素(虚拟DOM)
  */
-function createDOM(vdom) {
+export function createDOM(vdom) {
   if (vdom == null) {
     return ""
   }
@@ -91,6 +91,9 @@ function updateProps(dom, props) {
     if (key === "style") {
       // dom.style.color = "red"
       for (const styleKey in element) dom.style[styleKey] = element[styleKey]
+    } else if (key.startsWith("on")) {
+      // 处理事件
+      dom[key.toLowerCase()] = element
     } else {
       // dom.className = "title"
       dom[key] = element

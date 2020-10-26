@@ -4,8 +4,26 @@ import React from "./react"
 import ReactDOM from "./react-dom"
 
 class Hello extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      number: 0
+    }
+  }
+  onClickHandler = () => {
+    this.setState({ number: this.state.number + 1 }, () => {
+      console.log(this.state.number)
+    })
+    console.log(this.state.number)
+  }
   render() {
-    return <p>name:{this.props.name}</p>
+    return (
+      <div>
+        <p>name:{this.props.name}</p>
+        <p>number: {this.state.number}</p>
+        <button onClick={this.onClickHandler}>++</button>
+      </div>
+    )
   }
 }
 
