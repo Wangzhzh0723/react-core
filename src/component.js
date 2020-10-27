@@ -5,7 +5,7 @@
  * @LastEditTime: 2020-10-26 13:43:33
  * @Description: 组件
  */
-import { createDOM } from "./react-dom"
+import { compareTwoVdom } from "./react-dom"
 import { isFunction } from "./utils/util"
 export class Component {
   // 标识是类组件
@@ -23,20 +23,38 @@ export class Component {
     this.updater.addState(partialState)
   }
   forceUpdate() {
+    // 将要更新
+    if (this.componentWillUpdate) {
+      this.componentWillUpdate()
+    }
     // 重新调用render方法的带新的虚拟DOM
     const newRenderVdom = this.render()
-    updateClassComponent(this, newRenderVdom)
+
+    const currentVdom = compareTwoVdom(
+      this.dom.parentNode,
+      this.oldVdom,
+      newRenderVdom
+    )
+
+    this.oldVdom = currentVdom
+
+    // updateClassComponent(this, newRenderVdom)
+
+    // 更新完成
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate()
+    }
   }
 }
 
-function updateClassComponent(classInstance, renderDom) {
-  // 旧的真实DOM
-  const oldDom = classInstance.dom
-  // 得到新的真实DOM
-  const newDom = (classInstance.dom = createDOM(renderDom))
-  // 新旧DOM替换
-  oldDom.parentNode.replaceChild(newDom, oldDom)
-}
+// function updateClassComponent(classInstance, renderDom) {
+//   // 旧的真实DOM
+//   const oldDom = classInstance.dom
+//   // 得到新的真实DOM
+//   const newDom = (classInstance.dom = createDOM(renderDom))
+//   // 新旧DOM替换
+//   oldDom.parentNode.replaceChild(newDom, oldDom)
+// }
 
 /**
  * 更新器队列
@@ -68,19 +86,26 @@ class Updater {
   addState(partialState) {
     // 缓存分状态
     this.pendingStates.push(partialState)
+    this.emitUpdate()
+  }
+  // TODO 目前没有实现组件属性改变更新
+  emitUpdate(nextProps) {
+    this.nextProps = nextProps
+
     // 如果处于批量更新模式, 也就是异步更新模式, 把当前的update实例放到updateQueue队列中
     // 如果是费批量更新, 也就是同步更新的话, 就直接调用updateComponent更新
-    updateQueue.isBatchingUpdate
+    !nextProps && updateQueue.isBatchingUpdate
       ? updateQueue.add(this)
       : this.updateComponent()
   }
+
   updateComponent() {
     // 开始真正用pendingStates更新this.state
-    const { classInstance, pendingStates } = this
-    if (pendingStates.length) {
-      // 组件的老状态和数组中的新状态合并后的带最后的额新状态
-      classInstance.state = this.getState()
-      classInstance.forceUpdate() // 让组件强制更新
+    const { classInstance, pendingStates, nextProps } = this
+    if (nextProps || pendingStates.length) {
+      const nextState = this.getState()
+      shouldUpdate(classInstance, nextProps, nextState)
+      // 组件的老状态和数组中的新状态合并后的带最后的额新状态, 不管组件是否刷新state都会变化
     }
   }
   getState() {
@@ -101,4 +126,28 @@ class Updater {
     }
     return state
   }
+}
+
+/**
+ * 判断是否应该更新
+ * @param {*} classInstance 组件实例
+ * @param {*} nextProps 更新后的属性
+ * @param {*} nextState 合并后的状态
+ */
+function shouldUpdate(classInstance, nextProps, nextState) {
+  if (nextProps) {
+    classInstance.props = nextProps
+  }
+  if (
+    classInstance.shouldComponentUpdate &&
+    !classInstance.shouldComponentUpdate(classInstance.props, nextState)
+  ) {
+    classInstance.state = nextState
+    // 不更新
+    return false
+  }
+  classInstance.state = nextState
+  // 让组件强制更新
+  classInstance.forceUpdate()
+  return true // 更新
 }

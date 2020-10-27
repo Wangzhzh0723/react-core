@@ -1,7 +1,7 @@
 // 核心库  与渲染平台无关
-import React from "./react"
+import React from "react"
 // 渲染库, 可以把React渲染到不同的平台上 react-dom react-native react-canvas
-import ReactDOM from "./react-dom"
+import ReactDOM from "react-dom"
 
 class Hello extends React.Component {
   constructor(props) {
@@ -10,24 +10,43 @@ class Hello extends React.Component {
       number: 0
     }
   }
-  onClickHandler = event => {
-    console.log(event)
-    setTimeout(() => {
-      console.log(event)
-      this.setState({ number: this.state.number + 1 })
-      console.log(this.state.number)
-    }, 20)
-    this.setState({ number: this.state.number + 1 }, () => {
-      console.log(this.state.number)
-    })
-    console.log(this.state.number)
+  componentWillMount() {
+    console.log("componentWillMount")
   }
-  onClickDiv = () => {
-    console.log("haha")
+  componentWillReceiveProps(nextProps) {
+    console.log("componentWillReceiveProps")
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log("shouldComponentUpdate")
+    return nextState.number % 3 === 0
+  }
+  componentWillUpdate() {
+    console.log("componentWillUpdate")
+  }
+  componentDidUpdate() {
+    console.log("componentDidUpdate")
+  }
+  componentDidMount() {
+    console.log("componentDidMount")
+  }
+
+  componentWillUnmount() {
+    console.log("componentWillUnmount")
+  }
+  onClickHandler = event => {
+    // console.log(event)
+    // setTimeout(() => {
+    //   console.log(event)
+    //   this.setState({ number: this.state.number + 1 })
+    //   console.log(this.state.number)
+    // }, 20)
+    this.setState({ number: this.state.number + 1 })
+    // console.log(this.state.number)
   }
   render() {
     return (
-      <div onClick={this.onClickDiv}>
+      <div>
         <p>name:{this.props.name}</p>
         <p>number: {this.state.number}</p>
         <button onClick={this.onClickHandler}>++</button>
@@ -36,18 +55,26 @@ class Hello extends React.Component {
   }
 }
 
-function Welcome(props) {
-  return React.createElement(
-    "h1",
-    {
-      className: props.className,
-      style: props.style
-    },
-    React.createElement("span", null, "hello", null, "h"),
-    React.createElement(Hello, {
-      name: "小王🃏"
+class Welcome extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      name: 0
+    }
+  }
+  onChangeHandler = () => {
+    this.setState({
+      name: this.state.name + 1
     })
-  )
+  }
+  render() {
+    return (
+      <h1 className={this.props.className} style={this.props.style}>
+        <button onClick={this.onChangeHandler}>改变name</button>
+        {this.state.name === 3 ? null : <Hello name={this.state.name} />}
+      </h1>
+    )
+  }
 }
 
 const element = React.createElement(Welcome, {
