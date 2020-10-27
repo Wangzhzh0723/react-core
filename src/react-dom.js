@@ -32,7 +32,7 @@ export function createDOM(vdom) {
     return dom
   }
   // React元素
-  const { type, props } = vdom
+  const { type, props, ref } = vdom
   let dom
   // 是组件
   if (isFunction(type)) {
@@ -51,6 +51,7 @@ export function createDOM(vdom) {
 
   const children = props.children
   reconcileChildren(children, dom)
+  if (ref) ref.current = dom
 
   return dom
 }
@@ -60,9 +61,10 @@ export function createDOM(vdom) {
  * @param {*} vdom 函数组件的虚拟DOM
  */
 function updateFunctionComponent(vdom) {
-  const { type, props } = vdom
+  const { type, props, ref } = vdom
   const renderVdom = type(props)
-  return createDOM(renderVdom)
+  const dom = (ref.current = createDOM(renderVdom))
+  return dom
 }
 
 /**
@@ -70,13 +72,14 @@ function updateFunctionComponent(vdom) {
  * @param {*} vdom 类组件的虚拟DOM
  */
 function updateClassComponent(vdom) {
-  const { type, props } = vdom
+  const { type, props, ref } = vdom
   // 创建类组件实例
   const classInstance = new type(props)
   // 调用实例的render方法得到其虚拟DOM
   const renderVdom = classInstance.render()
   // 让类组件实例上挂载一个dom指向类实例的真实DOM
   const dom = (classInstance.dom = createDOM(renderVdom))
+  ref.current = classInstance
   return dom
 }
 

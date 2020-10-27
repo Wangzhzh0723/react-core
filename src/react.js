@@ -15,17 +15,27 @@ import { Component } from "./component"
  */
 export function createElement(type, config = {}, ...children) {
   const props = { ...config }
+  const ref = config.ref
+  delete props.ref
   // children中元素 可能是 null, React元素, 数字, 字符串
   props.children = children
   return {
     type,
-    props
+    props,
+    ref
+  }
+}
+
+function createRef() {
+  return {
+    current: null
   }
 }
 
 const React = {
   createElement,
-  Component
+  Component,
+  createRef
 }
 
 export default React

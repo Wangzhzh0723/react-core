@@ -44,3 +44,26 @@
 >
 > - 1. 可以实现 state 状态的批量更新
 > - 2. 可以实现事件对象的缓存和回收
+
+## 6. Ref
+
+- 1. Refs 提供了一种方式, 允许我们访问 DOM 节点或在 render 方法中创建的 React 元素
+- 2. 在 React 渲染生命周期时, 表单元素的 value 将会覆盖 DOM 节点中的值, 在非受控组件中, 你经常希望 React 能赋予组件一个初始值, 但是不去控制后续的更新. 在这种情况下, 你可以指定一个 defaultValue, 而不是 value
+
+### 6.1 ref 使用方式
+
+- 1. 值是一个字符串`<div ref="a"></div`, this.refs.a = 此节点真实的 dom 元素
+
+- 2. 值是通过`React.createRef`创建的对象,ref 接收底层 DOM 元素作为其 current 属性
+  ```jsx
+  class Sum extends React.component {
+    constructor(props) {
+      super(props)
+      this.a = React.createRef()
+    }
+    render() {
+      return <div ref={this.a} />
+    }
+  }
+  ```
+- 3. 当 ref 属性用于自定义 class 组件时, ref 对象接收组件的挂载实例作为其 current 属性
