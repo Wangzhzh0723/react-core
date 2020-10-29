@@ -152,7 +152,7 @@ function reconcileChildren(childrenVdom = [], parentDom) {
  * @param {*} oldVdom 老的虚拟DOM
  * @param {*} newVdom 新的虚拟DOM
  */
-export function compareTwoVdom(parentDOM, oldVdom, newVdom) {
+export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDom) {
   if (oldVdom == null && newVdom == null) {
     // 都不存在
     return null
@@ -170,8 +170,23 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom) {
     // 旧的不存在  新的存在
     // 创建新的dom, 并赋值给newVdom
     const newDOM = (newVdom.dom = createDOM(newVdom))
+    if (nextDom) {
+      parentDOM.insertBefore(newDOM, nextDom)
+    } else {
+      parentDOM.appendChild(newDOM)
+    }
 
-    parentDOM.appendChild(newDOM)
+    return newVdom
+  } else if (oldVdom && newVdom && oldVdom.type !== newVdom.type) {
+    // 都存在 但是节点类型发生变化  用新的替换老的节点
+    const oldDOM = oldVdom.dom
+    const newDOM = (newVdom.dom = createDOM(newVdom))
+    oldDOM.parentNode.replaceChild(newDOM, oldDOM)
+    const classInstance = oldDOM.classInstance
+    if (classInstance && classInstance.componentWillUnmount) {
+      // 调用卸载生命周期
+      classInstance.componentWillUnmount()
+    }
     return newVdom
   }
   // 都存在
@@ -221,7 +236,15 @@ function updateChildren(parentDOM, oldChildren, newChildren) {
   //  TODO DOM-DIFF 优化
   const maxLength = Math.max(oldChildren.length, newChildren.length)
   for (let i = 0; i < maxLength; i++) {
-    compareTwoVdom(parentDOM, oldChildren[i], newChildren[i])
+    const nextVdom = oldChildren.find(
+      (item, index) => index > i && item && item.dom
+    )
+    compareTwoVdom(
+      parentDOM,
+      oldChildren[i],
+      newChildren[i],
+      nextVdom && nextVdom.dom
+    )
   }
 }
 

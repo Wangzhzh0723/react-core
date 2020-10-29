@@ -27,8 +27,12 @@ export class Component {
     if (this.componentWillUpdate) {
       this.componentWillUpdate()
     }
+    updateClassComponentState(this)
+
     // 重新调用render方法的带新的虚拟DOM
     const newRenderVdom = this.render()
+    const extraArgs =
+      this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate()
 
     const currentVdom = compareTwoVdom(
       this.dom.parentNode,
@@ -42,7 +46,19 @@ export class Component {
 
     // 更新完成
     if (this.componentDidUpdate) {
-      this.componentDidUpdate()
+      this.componentDidUpdate(this.props, this.state, extraArgs)
+    }
+  }
+}
+
+function updateClassComponentState(classInstance) {
+  if (classInstance.constructor.getDerivedStateFromProps) {
+    const newState = classInstance.constructor.getDerivedStateFromProps(
+      classInstance.props,
+      classInstance.state
+    )
+    if (newState) {
+      classInstance.state = { ...classInstance.state, ...newState }
     }
   }
 }
@@ -88,7 +104,6 @@ class Updater {
     this.pendingStates.push(partialState)
     this.emitUpdate()
   }
-  // TODO 目前没有实现组件属性改变更新
   emitUpdate(nextProps) {
     this.nextProps = nextProps
 
