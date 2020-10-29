@@ -67,3 +67,127 @@
   }
   ```
 - 3. 当 ref 属性用于自定义 class 组件时, ref 对象接收组件的挂载实例作为其 current 属性
+- 4. 当 ref 用于函数组件的时候,需要使用 forwardRef 进行转发给子组件, 因为他没有实例
+
+## 7. 生命周期
+
+### 7.1 旧版生命周期
+
+![](./img/old_react_lifecycle.jpg)
+
+### 7.2 新版生命周期
+
+废弃了 componentWillMount componentWillReceiveProps componentWillUpdate 三个生命周期
+![](./img/new_react_lifecycle.jpg)
+
+## 8. Context(上下文)
+
+- 在某些场景下，你想在整个组件树中传递数据，但却不想手动地在每一层传递属性。你可以直接在 React 中使用强大的 contextAPI 解决上述问题
+- 在一个典型的 React 应用中，数据是通过 props 属性自上而下（由父及子）进行传递的，但这种做法对于某些类型的属性而言是极其繁琐的（例如：地区偏好，UI 主题），这些属性是应用程序中许多组件都需要的。Context 提供了一种在组件之间共享此类值的方式，而不必显式地通过组件树的逐层传递 props
+
+```jsx
+import React, { Component } from "react"
+import ReactDOM from "react-dom"
+let ThemeContext = React.createContext(null)
+let root = document.querySelector("#root")
+class Header extends Component {
+  render() {
+    return (
+      <ThemeContext.Consumer>
+        {value => (
+          <div style={{ border: `5px solid ${value.color}`, padding: "5px" }}>
+            header
+            <Title />
+          </div>
+        )}
+      </ThemeContext.Consumer>
+    )
+  }
+}
+class Title extends Component {
+  render() {
+    return (
+      <ThemeContext.Consumer>
+        {value => (
+          <div style={{ border: `5px solid ${value.color}` }}>title</div>
+        )}
+      </ThemeContext.Consumer>
+    )
+  }
+}
+class Main extends Component {
+  render() {
+    return (
+      <ThemeContext.Consumer>
+        {value => (
+          <div
+            style={{
+              border: `5px solid ${value.color}`,
+              margin: "5px",
+              padding: "5px"
+            }}
+          >
+            main
+            <Content />
+          </div>
+        )}
+      </ThemeContext.Consumer>
+    )
+  }
+}
+class Content extends Component {
+  render() {
+    return (
+      <ThemeContext.Consumer>
+        {value => (
+          <div style={{ border: `5px solid ${value.color}`, padding: "5px" }}>
+            Content
+            <button
+              onClick={() => value.changeColor("red")}
+              style={{ color: "red" }}
+            >
+              红色
+            </button>
+            <button
+              onClick={() => value.changeColor("green")}
+              style={{ color: "green" }}
+            >
+              绿色
+            </button>
+          </div>
+        )}
+      </ThemeContext.Consumer>
+    )
+  }
+}
+
+class Page extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { color: "red" }
+  }
+  changeColor = color => {
+    this.setState({ color })
+  }
+  render() {
+    let contextVal = { changeColor: this.changeColor, color: this.state.color }
+    return (
+      <ThemeContext.Provider value={contextVal}>
+        <div
+          style={{
+            margin: "10px",
+            border: `5px solid ${this.state.color}`,
+            padding: "5px",
+            width: 200
+          }}
+        >
+          page
+          <Header />
+          <Main />
+        </div>
+      </ThemeContext.Provider>
+    )
+  }
+}
+ReactDOM.render(<Page />, root)
+```

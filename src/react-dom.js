@@ -38,10 +38,10 @@ export function createDOM(vdom) {
   if (isFunction(type)) {
     if (type.isReactComponent) {
       // 类组件
-      return updateClassComponent(vdom)
+      return mountClassComponent(vdom)
     } else {
       // 函数组件
-      return updateFunctionComponent(vdom)
+      return mountFunctionComponent(vdom)
     }
   } else {
     dom = document.createElement(type) // span div ...
@@ -62,10 +62,12 @@ export function createDOM(vdom) {
  * 得到函数组件的真实DOM
  * @param {*} vdom 函数组件的虚拟DOM
  */
-function updateFunctionComponent(vdom) {
+function mountFunctionComponent(vdom) {
   const { type, props, ref } = vdom
   const renderVdom = type(props)
   const dom = createDOM(renderVdom)
+  vdom.renderVdom = renderVdom
+  renderVdom.dom = dom
   if (ref) {
     ref.current = dom
   }
@@ -76,7 +78,7 @@ function updateFunctionComponent(vdom) {
  * 得到类组件的真实DOM
  * @param {*} vdom 类组件的虚拟DOM
  */
-function updateClassComponent(vdom) {
+function mountClassComponent(vdom) {
   const { type, props, ref } = vdom
   // 创建类组件实例
   const classInstance = new type(props)
@@ -125,7 +127,10 @@ function updateProps(dom, oldProps, newProps) {
     const element = newProps[key]
     if (key === "style") {
       // dom.style.color = "red"
-      for (const styleKey in element) dom.style[styleKey] = element[styleKey]
+      for (const styleKey in element)
+        dom.style[styleKey] = isNumber(element[styleKey])
+          ? element[styleKey] + "px"
+          : element[styleKey]
     } else if (key.startsWith("on")) {
       // 处理事件
       // dom[key.toLowerCase()] = element
@@ -221,8 +226,13 @@ function updateElement(parentDOM, oldVdom, newVdom) {
     // 更新儿子
     updateChildren(currentDom, oldVdom.props.children, newVdom.props.children)
   } else if (isFunction(oldVdom.type)) {
-    // 更新类实例
-    updateClassInstanceComponent(oldVdom, newVdom)
+    if (oldVdom.type.isReactComponent) {
+      // 更新类实例
+      updateClassInstanceComponent(oldVdom, newVdom)
+    } else {
+      // 更新函数组件
+      updateFunctionComponent(oldVdom, newVdom)
+    }
   }
 }
 
@@ -246,6 +256,19 @@ function updateChildren(parentDOM, oldChildren, newChildren) {
       nextVdom && nextVdom.dom
     )
   }
+}
+
+/**
+ * 更新类的实例
+ * @param {*} oldVdom 老的虚拟dom
+ * @param {*} newVdom 新的虚拟dom
+ */
+function updateFunctionComponent(oldVdom, newVdom) {
+  const { type, props } = newVdom
+  const newRenderVdom = type(props)
+  newVdom.renderVdom = newRenderVdom
+  const parentDOM = oldVdom.renderVdom.dom.parentNode
+  compareTwoVdom(parentDOM, oldVdom.renderVdom, newRenderVdom)
 }
 
 /**

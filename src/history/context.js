@@ -1,5 +1,5 @@
-import React from "./react"
-import ReactDOM from "./react-dom"
+import React from "../react"
+import ReactDOM from "../react-dom"
 let ThemeContext = React.createContext(null)
 let root = document.querySelector("#root")
 class Header extends React.Component {

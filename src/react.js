@@ -32,10 +32,30 @@ function createRef() {
   }
 }
 
+function createContext() {
+  // 创建上下文
+  const context = {
+    _currentValue: null, // 值
+    Provider: Provider, // 提供者
+    Consumer: Consumer // 消费者
+  }
+  function Provider({ value, children: [child] }) {
+    context._currentValue = value // 赋值
+    return child
+  }
+
+  function Consumer({ children: [child] }) {
+    // 运行并传入值
+    return child(context._currentValue)
+  }
+  return context
+}
+
 const React = {
   createElement,
   Component,
-  createRef
+  createRef,
+  createContext
 }
 
 export default React
