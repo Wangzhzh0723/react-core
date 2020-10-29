@@ -1,3 +1,5 @@
+import { reactText } from "./constants"
+
 /*
  * @Author: Jonath
  * @Date: 2020-10-26 11:20:37
@@ -15,3 +17,8 @@ export const isNumber = isType("Number")
 
 export const isObject = obj => obj !== null && typeof obj === "object"
 export const isFunction = obj => typeof obj === "function"
+
+export const isText = obj => isNumber(obj) || isString(obj)
+
+export const wrapToVdom = obj =>
+  isText(obj) ? { type: reactText, props: { content: obj } } : obj

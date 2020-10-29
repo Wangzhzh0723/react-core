@@ -7,6 +7,7 @@
  */
 import { Component } from "./component"
 import { reactFragment } from "./utils/constants"
+import { wrapToVdom } from "./utils/util"
 
 /**
  * 创建React元素
@@ -19,7 +20,7 @@ export function createElement(type, config = {}, ...children) {
   const ref = props.ref
   delete props.ref
   // children中元素 可能是 null, React元素, 数字, 字符串
-  props.children = children
+  props.children = children.map(wrapToVdom)
   return {
     type,
     props,

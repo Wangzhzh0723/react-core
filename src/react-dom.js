@@ -8,7 +8,7 @@
 
 import { isString, isNumber, isFunction } from "./utils/util"
 import { addEvent } from "./event"
-import { reactFragment } from "./utils/constants"
+import { reactFragment, reactText } from "./utils/constants"
 
 /**
  * 虚拟DOM转换成真实DOM, 并插入到容器里
@@ -44,6 +44,9 @@ export function createDOM(vdom) {
       // 函数组件
       return mountFunctionComponent(vdom)
     }
+  } else if (type === reactText) {
+    dom = document.createTextNode(vdom)
+    dom.textContent = vdom.props.content
   } else {
     if (type === reactFragment) {
       // React空节点 dom Fragment
@@ -180,6 +183,9 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDom) {
     const { dom: currentDom, classInstance } = oldVdom
     currentDom.parentNode.removeChild(currentDom)
 
+    let currentDOM = findDOM(oldVdom)
+    if (currentDOM) parentDOM.removeChild(currentDOM)
+
     if (classInstance && classInstance.componentWillUnmount) {
       // 调用卸载生命周期
       classInstance.componentWillUnmount()
@@ -214,6 +220,23 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDom) {
   return newVdom
 }
 
+function findDOM(vdom) {
+  let { type } = vdom
+  let dom
+  if (typeof type === "function") {
+    if (type.isReactComponent) {
+      dom = findDOM(vdom.classInstance.oldRenderVdom)
+    } else {
+      dom = findDOM(vdom.oldRenderVdom)
+    }
+  } else {
+    //span div dom对应真实DOM
+    //只有原生组件的虚拟DOM上才会有dom属性 类组件或函数组件身上没有这个属性
+    dom = vdom.dom
+  }
+  return dom
+}
+
 /**
  * DOM-DIFF 深度比较优化策略  同级比较
  * 进入深度比较
@@ -221,19 +244,12 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDom) {
  * @param {*} newVdom 新的虚拟dom
  */
 function updateElement(parentDOM, oldVdom, newVdom) {
-  if (
-    (isString(oldVdom) || isNumber(oldVdom)) &&
-    (isString(newVdom) || isNumber(newVdom))
-  ) {
-    if (newVdom !== oldVdom) {
-      parentDOM.textContent = newVdom.toString()
-    }
-    return
-  }
   // 获取老的真实DOM
   const currentDom = (newVdom.dom = oldVdom.dom)
   newVdom.classInstance = oldVdom.classInstance
-  if (isString(oldVdom.type)) {
+  if (oldVdom.type === reactText) {
+    currentDom.textContent = newVdom.props.content
+  } else if (isString(oldVdom.type)) {
     // 原生dom元素
     // 更新属性
     updateProps(currentDom, oldVdom.props, newVdom.props)
