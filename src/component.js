@@ -153,7 +153,6 @@ function shouldUpdate(classInstance, nextProps, nextState) {
   if (nextProps) {
     classInstance.props = nextProps
   }
-  debugger
   if (
     classInstance.shouldComponentUpdate &&
     !classInstance.shouldComponentUpdate(classInstance.props, nextState)

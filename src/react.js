@@ -26,6 +26,14 @@ export function createElement(type, config = {}, ...children) {
   }
 }
 
+function cloneElement(element, props, ...children) {
+  props.children = children
+  return {
+    ...element,
+    props
+  }
+}
+
 function createRef() {
   return {
     current: null
@@ -55,7 +63,8 @@ const React = {
   createElement,
   Component,
   createRef,
-  createContext
+  createContext,
+  cloneElement
 }
 
 export default React

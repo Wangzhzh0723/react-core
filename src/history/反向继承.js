@@ -1,5 +1,5 @@
-import React from "./react"
-import ReactDOM from "./react-dom"
+import React from "react"
+import ReactDOM from "react-dom"
 /**
  * 高阶组件  它是一个函数
  * 反向继承 基于反向继承，我们可以拦截生命周期，state还有渲染过程
@@ -29,6 +29,7 @@ const wrapper = OldComponent => {
         ...oldElement.props,
         onClick: this.handleClick
       }
+      console.log(newProps)
       return React.cloneElement(oldElement, newProps, this.state.number)
     }
   }

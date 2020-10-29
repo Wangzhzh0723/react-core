@@ -201,7 +201,7 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDom) {
 }
 
 /**
- * DOM-DIF 深度比较优化策略  同级比较
+ * DOM-DIFF 深度比较优化策略  同级比较
  * 进入深度比较
  * @param {*} oldVdom 老的虚拟dom
  * @param {*} newVdom 新的虚拟dom
@@ -243,7 +243,6 @@ function updateElement(parentDOM, oldVdom, newVdom) {
  * @param {*} newChildren 新的虚拟doms
  */
 function updateChildren(parentDOM, oldChildren, newChildren) {
-  //  TODO DOM-DIFF 优化
   const maxLength = Math.max(oldChildren.length, newChildren.length)
   for (let i = 0; i < maxLength; i++) {
     const nextVdom = oldChildren.find(
