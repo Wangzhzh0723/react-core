@@ -51,6 +51,36 @@ export class Component {
   }
 }
 
+export class PureComponent extends Component {
+  isPureReactComponent = true
+  shouldComponentUpdate(nextProps, nextState) {
+    function getKeyLength(obj) {
+      return Object.keys(obj).length
+    }
+    let oldKeyLength = getKeyLength(this.state)
+    let nextKeyLength = getKeyLength(nextState)
+    if (oldKeyLength !== nextKeyLength) {
+      return true
+    }
+    for (const key in this.state) {
+      if (this.state[key] !== nextState[key]) {
+        return true
+      }
+    }
+    oldKeyLength = getKeyLength(this.props)
+    nextKeyLength = getKeyLength(nextProps)
+    if (oldKeyLength !== nextKeyLength) {
+      return true
+    }
+    for (const key in this.props) {
+      if (this.props[key] !== nextProps[key]) {
+        return true
+      }
+    }
+    return false
+  }
+}
+
 function updateClassComponentState(classInstance) {
   if (classInstance.constructor.getDerivedStateFromProps) {
     const newState = classInstance.constructor.getDerivedStateFromProps(

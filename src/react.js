@@ -5,7 +5,7 @@
  * @LastEditTime: 2020-10-26 13:39:39
  * @Description: React
  */
-import { Component } from "./component"
+import { Component, PureComponent } from "./component"
 import { reactFragment } from "./utils/constants"
 import { wrapToVdom } from "./utils/util"
 
@@ -67,7 +67,8 @@ const React = {
   createRef,
   createContext,
   cloneElement,
-  Fragment: reactFragment
+  Fragment: reactFragment,
+  PureComponent
 }
 
 export default React
