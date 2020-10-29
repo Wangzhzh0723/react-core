@@ -6,6 +6,7 @@
  * @Description: React
  */
 import { Component } from "./component"
+import { reactFragment } from "./utils/constants"
 
 /**
  * 创建React元素
@@ -64,7 +65,8 @@ const React = {
   Component,
   createRef,
   createContext,
-  cloneElement
+  cloneElement,
+  Fragment: reactFragment
 }
 
 export default React

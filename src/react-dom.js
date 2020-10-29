@@ -8,6 +8,7 @@
 
 import { isString, isNumber, isFunction } from "./utils/util"
 import { addEvent } from "./event"
+import { reactFragment } from "./utils/constants"
 
 /**
  * 虚拟DOM转换成真实DOM, 并插入到容器里
@@ -44,7 +45,13 @@ export function createDOM(vdom) {
       return mountFunctionComponent(vdom)
     }
   } else {
-    dom = document.createElement(type) // span div ...
+    if (type === reactFragment) {
+      // React空节点 dom Fragment
+      // 创建文档片段
+      dom = createDocumentFragment()
+    } else {
+      dom = document.createElement(type) // span div ...
+    }
   }
 
   updateProps(dom, {}, props) // 更新属性, 把虚拟DOM上的属性设置到真实DOM上
@@ -56,6 +63,13 @@ export function createDOM(vdom) {
   vdom.dom = dom
 
   return dom
+}
+
+/**
+ * 创建文档片段
+ */
+function createDocumentFragment() {
+  return document.createDocumentFragment()
 }
 
 /**
