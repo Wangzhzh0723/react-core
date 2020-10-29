@@ -73,12 +73,12 @@
 
 ### 7.1 旧版生命周期
 
-![](./img/old_react_lifecycle.jpg)
+![](./md/img/old_react_lifecycle.jpg)
 
 ### 7.2 新版生命周期
 
 废弃了 componentWillMount componentWillReceiveProps componentWillUpdate 三个生命周期
-![](./img/new_react_lifecycle.jpg)
+![](./md/img/new_react_lifecycle.jpg)
 
 ## 8. Context(上下文)
 
