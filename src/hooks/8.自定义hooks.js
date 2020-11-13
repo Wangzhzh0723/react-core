@@ -3,7 +3,7 @@ import ReactDOM from "react-dom"
 
 /**
  * 自定义hooks
- * 函数开头必须使用小写的use或则大写开头
+ * 函数开头必须使用小写的use
  */
 
 function useNumber(init) {
